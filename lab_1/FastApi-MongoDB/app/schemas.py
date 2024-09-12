@@ -1,6 +1,8 @@
-from pydantic import BaseModel,EmailStr,StringConstraints,Field
 from typing import List,Union
 from datetime import datetime
+
+from pydantic import BaseModel,EmailStr,StringConstraints,Field
+
 
 
 

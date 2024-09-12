@@ -1,7 +1,8 @@
+import os
+
+import dotenv
 import pytest
 from pymongo.mongo_client import MongoClient
-import dotenv
-import os
 
 dotenv.load_dotenv(".env")
    

@@ -1,7 +1,8 @@
+import pyotp
 from fastapi.testclient import TestClient
+
 from main import app
 from .conftest import clear_db
-import pyotp
 from app.authentication import User
 
 client = TestClient(app)

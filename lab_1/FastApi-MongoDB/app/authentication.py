@@ -1,13 +1,34 @@
-from fastapi import APIRouter,status,HTTPException,Response,Depends,BackgroundTasks
-from app.database import client
-from fastapi.responses import JSONResponse
-from app.schemas import CreateUser,LoginUser,ResponseUser,Verification,ResendCode,ForgotPassword
-from bson import ObjectId
-from datetime import datetime
-from .security import get_password_hash,verify_password,send_email,create_jwt_token,jwt_refresh_token_required
-import pyotp
-from datetime import timedelta
+from datetime import datetime, timedelta
 import re
+
+import pyotp
+from bson import ObjectId
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Depends,
+    HTTPException,
+    Response,
+    status,
+)
+from fastapi.responses import JSONResponse
+
+from app.database import client
+from app.schemas import (
+    CreateUser,
+    ForgotPassword,
+    LoginUser,
+    ResendCode,
+    ResponseUser,
+    Verification,
+)
+from app.security import (
+    create_jwt_token,
+    get_password_hash,
+    send_email,
+    verify_password,
+    jwt_refresh_token_required,
+)
 
 
 # create the user collection

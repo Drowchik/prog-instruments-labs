@@ -1,12 +1,13 @@
-from passlib.context import CryptContext
+import os
+from datetime import datetime
+
+import dotenv
 from fastapi_mail import ConnectionConfig, FastMail, MessageSchema, MessageType
 from fastapi import Depends,HTTPException,status,Request
 from jwt.exceptions import PyJWTError,ExpiredSignatureError,DecodeError
 from fastapi.security import OAuth2PasswordBearer
-import os
-import dotenv
 from jwt import encode,decode
-from datetime import datetime
+from passlib.context import CryptContext
 
 dotenv.load_dotenv(".env")
 

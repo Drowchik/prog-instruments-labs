@@ -1,13 +1,24 @@
-from fastapi import APIRouter,Depends,HTTPException,status,Response,UploadFile,File,Request
-from fastapi.responses import JSONResponse
-from app.database import client
-from bson import ObjectId
-from datetime import datetime
-from .security import jwt_required
-from app.schemas import UserProfile,UpdateUserProfile,ReadUserProfile
-import secrets
 import aiofiles
+import secrets
+from datetime import datetime
+
+from bson import ObjectId
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    status,
+    Response,
+    UploadFile,
+    File,
+    Request,
+)
+from fastapi.responses import JSONResponse
+
 from app.authentication import username_regex
+from app.database import client
+from app.schemas import UserProfile, UpdateUserProfile, ReadUserProfile
+from .security import jwt_required
 
 profile_router=APIRouter(prefix="/profile",tags=["Profile"])
 

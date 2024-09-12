@@ -1,16 +1,27 @@
-from fastapi import APIRouter,status,HTTPException,Response,UploadFile,File,Form,Request,Depends
-from fastapi.responses import JSONResponse
-from app.schemas import ReadProduct,CreateProduct
-from bson import ObjectId,errors
-import uuid
-from typing import List
-import secrets
-import aiofiles
-from datetime import datetime
 import os
 import re
+import uuid
+import secrets
+from datetime import datetime
+
+import aiofiles
+from bson import ObjectId, errors
+from fastapi import (
+    APIRouter,
+    HTTPException,
+    Response,
+    UploadFile,
+    File,
+    Form,
+    Request,
+    Depends,
+)
+from fastapi.responses import JSONResponse
+
 from app.database import client
+from app.schemas import ReadProduct, CreateProduct
 from app.security import jwt_required
+from typing import List
 
 # create the product collection
 Product=client.MarketPlace.products

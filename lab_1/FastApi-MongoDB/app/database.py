@@ -1,8 +1,8 @@
+import os
+
+import dotenv
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
-import os
-import dotenv
-
 
 #Load environment variables
 # create .env file and store the mongodb url in it
