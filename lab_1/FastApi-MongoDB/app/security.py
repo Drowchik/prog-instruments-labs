@@ -2,17 +2,17 @@ import os
 from datetime import datetime
 
 import dotenv
+from fastapi import Depends, HTTPException, Request, status
 from fastapi_mail import ConnectionConfig, FastMail, MessageSchema, MessageType
-from fastapi import Depends,HTTPException,status,Request
-from jwt.exceptions import PyJWTError,ExpiredSignatureError,DecodeError
 from fastapi.security import OAuth2PasswordBearer
-from jwt import encode,decode
+from jwt import decode, encode
+from jwt.exceptions import DecodeError, ExpiredSignatureError, PyJWTError
 from passlib.context import CryptContext
 
 
 dotenv.load_dotenv(".env")
 
-password_context = CryptContext(schemes=["bcrypt"], 
+password_context = CryptContext(schemes=["bcrypt"],
                                 deprecated="auto")
 oauth_2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
 
@@ -25,13 +25,13 @@ MAIL_PASSWORD = YOUR MAIL PASSWORD
 # print(os.getenv('MAIL_USERNAME'))
 # configuring the mail
 conf = ConnectionConfig(
-    MAIL_USERNAME = os.getenv('MAIL_USERNAME'),
-    MAIL_PASSWORD = os.getenv('MAIL_PASSWORD'),
-    MAIL_FROM = os.getenv('MAIL_USERNAME'),
-    MAIL_PORT = 587,
-    MAIL_SERVER = "smtp.gmail.com",
-    MAIL_STARTTLS = True,
-    MAIL_SSL_TLS = False,
+    MAIL_USERNAME=os.getenv('MAIL_USERNAME'),
+    MAIL_PASSWORD=os.getenv('MAIL_PASSWORD'),
+    MAIL_FROM=os.getenv('MAIL_USERNAME'),
+    MAIL_PORT=587,
+    MAIL_SERVER="smtp.gmail.com",
+    MAIL_STARTTLS=True,
+    MAIL_SSL_TLS=False,
 )
 
 
@@ -68,7 +68,7 @@ SECRET_KEY = YOUR SECRET KEY
 """
 
 
-async def create_jwt_token(data: dict, 
+async def create_jwt_token(data: dict,
                            expires_time: datetime, mode: str):
     """
         Creating jwt token.
@@ -81,13 +81,13 @@ async def create_jwt_token(data: dict,
     return encoded_jwt
 
 
-async def jwt_refresh_token_required(request: Request, 
+async def jwt_refresh_token_required(request: Request,
                                      token: str = Depends(oauth_2_scheme)) -> dict:
     """
         Verifying if the refresh token is valid.
     """
     try:
-        payload = decode(token,os.getenv('SECRET_KEY'), algorithms=["HS256"])
+        payload = decode(token, os.getenv('SECRET_KEY'), algorithms=["HS256"])
         if "id" not in payload:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                                 detail="invalid token")
@@ -96,11 +96,11 @@ async def jwt_refresh_token_required(request: Request,
                                 detail="invalid token")
         return payload
     except ExpiredSignatureError:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                                detail="token expired")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail="token expired")
     except PyJWTError as e:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                                detail="invalid token")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail="invalid token")
 
 
 async def jwt_required(request: Request, token: str = Depends(oauth_2_scheme)) -> dict:
@@ -109,7 +109,7 @@ async def jwt_required(request: Request, token: str = Depends(oauth_2_scheme)) -
 
     """
     try:
-        payload = decode(token,os.getenv('SECRET_KEY'), algorithms=["HS256"])
+        payload = decode(token, os.getenv('SECRET_KEY'), algorithms=["HS256"])
         if "id" not in payload:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                                 detail="invalid token")
@@ -118,8 +118,8 @@ async def jwt_required(request: Request, token: str = Depends(oauth_2_scheme)) -
                                 detail="invalid token")
         return payload
     except ExpiredSignatureError:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                                detail="token expired")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail="token expired")
     except PyJWTError as e:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                                detail="invalid token")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail="invalid token")

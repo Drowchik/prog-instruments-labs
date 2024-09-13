@@ -6,19 +6,19 @@ from bson import ObjectId
 from fastapi import (
     APIRouter,
     Depends,
+    File,
     HTTPException,
-    status,
+    Request,
     Response,
     UploadFile,
-    File,
-    Request,
+    status,
 )
 from fastapi.responses import JSONResponse
 
 from app.authentication import username_regex
 from app.database import client
-from app.schemas import UserProfile, UpdateUserProfile, ReadUserProfile
-from .security import jwt_required
+from app.schemas import ReadUserProfile, UpdateUserProfile, UserProfile
+from app.security import jwt_required
 
 profile_router = APIRouter(prefix="/profile",tags=["Profile"])
 
@@ -41,6 +41,7 @@ def deserialize_data(user: dict) -> dict:
             "email": user["email"],
             "created_at": user["created_at"],
             "picture": user["picture"]}
+
 
 @profile_router.get("/{user_name}", 
                     status_code=status.HTTP_200_OK, 
@@ -126,7 +127,8 @@ async def upload_picture(request: Request, picture: UploadFile = File(...),
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, 
                             detail='the file must be image')
 
-    destination_file_path = "static/" + secrets.token_hex(13) + picture.filename
+    destination_file_path = "static/" + \
+        secrets.token_hex(13) + picture.filename
     async with aiofiles.open(destination_file_path, 'wb') as out_file:
         while content := await picture.read(1024):
             await out_file.write(content)

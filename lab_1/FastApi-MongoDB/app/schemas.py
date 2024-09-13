@@ -1,10 +1,9 @@
-from typing import List,Union
 from datetime import datetime
+from typing import List, Union
 
-from pydantic import BaseModel, EmailStr, StringConstraints, Field
+from pydantic import BaseModel, EmailStr, Field, StringConstraints
 
 
-# product shemas
 class ReadProduct(BaseModel):
     id: str
     name: str

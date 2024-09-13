@@ -1,29 +1,29 @@
 import os
 import re
-import uuid
 import secrets
+import uuid
 from datetime import datetime
+from typing import List
 
 import aiofiles
 from bson import ObjectId, errors
 from fastapi import (
     APIRouter,
-    status,
-    HTTPException,
-    Response,
-    UploadFile,
+    Depends,
     File,
     Form,
+    HTTPException,
     Request,
-    Depends,
+    Response,
+    UploadFile,
+    status,
 )
 from fastapi.responses import JSONResponse
 
 from app.database import client
-from app.schemas import ReadProduct, CreateProduct
+from app.schemas import CreateProduct, ReadProduct
 from app.security import jwt_required
-from typing import List
-
+ 
 # create the product collection
 Product = client.MarketPlace.products
 
@@ -32,7 +32,7 @@ Product = client.MarketPlace.products
 product_router = APIRouter(prefix="/product", tags=["Products"])
 
 
-def deserialize_product(product)-> dict:
+def deserialize_product(product) -> dict:
     """
         Сonverts it to a dictionary
 
@@ -175,7 +175,8 @@ async def upload_images(request: Request, id: str,
             return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, 
                                  detail='the file must be image')
     for image in images:
-            destination_file_path = "static/" + secrets.token_hex(13) + image.filename 
+            destination_file_path = "static/" + \
+                secrets.token_hex(13) + image.filename 
             async with aiofiles.open(destination_file_path, 'wb') as out_file:
                  while content := await image.read(1024):  
                     await out_file.write(content) 

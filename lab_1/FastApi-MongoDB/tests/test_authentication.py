@@ -1,8 +1,8 @@
 import pyotp
 from fastapi.testclient import TestClient
 
-from main import app
 from app.authentication import User
+from main import app
 
 
 client = TestClient(app)
@@ -130,7 +130,8 @@ def test_verify_email_invalid_code(clear_db):
                            json={"id":register_response.json()["id"], 
                                  "verification_code":"12345"})
     assert response.status_code == 400
-    assert response.json() == {"detail": "please enter a correct verification code"}   
+    assert response.json() == {
+        "detail": "please enter a correct verification code"}   
 
 
 def test_login_not_exist(clear_db):

@@ -1,9 +1,9 @@
 import pyotp
 from fastapi.testclient import TestClient
 
-from main import app
-from .conftest import clear_db
 from app.authentication import User
+from main import app
+from tests.conftest import clear_db
 
 
 client = TestClient(app)
@@ -160,16 +160,16 @@ def test_create_product_invalid_field(clear_db):
                                   json={"id": register_response.json()["id"], 
                                         "verification_code": verification_code})
     # then create a new product by the new user with invalid price field type
-    response=client.post("/product", 
-                         json={"name": "test", 
-                               "description": "test", 
-                               "price": "test", "currency":
-                                   "USD", "category": "test", 
-                                   "location": "test"}, 
-                         headers={"Authorization": f"Bearer {verify_response.json()['access_token']}"})
+    response = client.post("/product", 
+                            json={"name": "test", 
+                                "description": "test", 
+                                "price": "test", "currency":
+                                    "USD", "category": "test", 
+                                    "location": "test"}, 
+                            headers={"Authorization": f"Bearer {verify_response.json()['access_token']}"})
     assert response.status_code == 422
     assert response.json() == {
-        'detail':[
+        'detail': [
             {
                 'input': 'test', 
                 'loc': [
@@ -180,20 +180,20 @@ def test_create_product_invalid_field(clear_db):
                 'type': 'float_parsing'
             },
             {
-              'input': {
-                  'category': 'test',
-                  'currency': 'USD',
-                   'description': 'test',
-                   'location': 'test',
-                  'name': 'test',
-                  'price': 'test',
-               },
-               'loc': [
-                  'body',
-                  'condition',
-             ],
-               'msg': 'Field required',
-               'type': 'missing',
+                'input': {
+                    'category': 'test',
+                    'currency': 'USD',
+                    'description': 'test',
+                    'location': 'test',
+                    'name': 'test',
+                    'price': 'test',
+                },
+                'loc': [
+                    'body',
+                    'condition',
+                ],
+                'msg': 'Field required',
+                'type': 'missing',
             }
         ]
     }

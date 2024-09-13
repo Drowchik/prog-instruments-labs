@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
 import re
 
-import pyotp
 from bson import ObjectId
+import pyotp
 from fastapi import (
     APIRouter,
     BackgroundTasks,
@@ -25,9 +25,9 @@ from app.schemas import (
 from app.security import (
     create_jwt_token,
     get_password_hash,
+    jwt_refresh_token_required,
     send_email,
     verify_password,
-    jwt_refresh_token_required,
 )
 
 
