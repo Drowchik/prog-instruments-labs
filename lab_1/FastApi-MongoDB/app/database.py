@@ -8,7 +8,7 @@ from pymongo.server_api import ServerApi
 # create .env file and store the mongodb url in it
 
 dotenv.load_dotenv()
-url=os.getenv("DB_URL")
+url = os.getenv("DB_URL")
 
 #Create a new client and connect to the server
 client = MongoClient(url, server_api=ServerApi('1'))

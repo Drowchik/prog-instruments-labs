@@ -1,10 +1,12 @@
+import os 
+import dotenv
+
 import uvicorn
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from app import product,profile,authentication
-import os 
-import dotenv
+
+from app import product, profile, authentication
 
 
 
@@ -34,4 +36,4 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 if __name__ == "__main__":
 
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True,http="httptools")
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True, http="httptools")

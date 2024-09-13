@@ -16,26 +16,26 @@ test_user = {
 }
 
 # function to deserialize the user data from the database
-def deserialize_user(user)-> dict:
-    return {"id":str(user["_id"]),
-            "name":user["name"],
-            "password":user["password"],
-            "username":user["username"],
-            "is_active":user["is_active"],
-            "is_verified":user["is_verified"],
-            "otp_secret":user["otp_secret"],
-            "email":user["email"]}
+def deserialize_user(user) -> dict:
+    return {"id": str(user["_id"]),
+            "name": user["name"],
+            "password": user["password"],
+            "username": user["username"],
+            "is_active": user["is_active"],
+            "is_verified": user["is_verified"],
+            "otp_secret": user["otp_secret"],
+            "email": user["email"]}
 
 
 # test product example 
 test_product = {
-    "name":"test",
-    "description":"test",
-    "price":100,
-    "currency":"USD",
-    "category":"test",
-    "location":"test",
-    "condition":"good",
+    "name": "test",
+    "description": "test",
+    "price": 100,
+    "currency": "USD",
+    "category": "test",
+    "location": "test",
+    "condition": "good",
 }
 
 
@@ -47,14 +47,14 @@ def test_read_items(clear_db):
 
 def test_read_single_item(clear_db):
     # first create a new user and verify it
-    register_response = client.post("/auth/signup",json=test_user)
-    user = User.find_one({"email":test_user["email"]})
+    register_response = client.post("/auth/signup", json=test_user)
+    user = User.find_one({"email": test_user["email"]})
     user = deserialize_user(user)
-    verification_code = pyotp.TOTP(user["otp_secret"],interval=600).now()
-    verify_response = client.post("/auth/verify",json={"id":register_response.json()["id"],"verification_code":verification_code})
+    verification_code = pyotp.TOTP(user["otp_secret"], interval=600).now()
+    verify_response = client.post("/auth/verify", json={"id": register_response.json()["id"], "verification_code": verification_code})
     # then create a new product by the new user
-    product_response = client.post("/product",json=test_product,headers={"Authorization":f"Bearer {verify_response.json()['access_token']}"})
-    response = client.get("/product/"+product_response.json()["id"])
+    product_response = client.post("/product", json=test_product, headers={"Authorization": f"Bearer {verify_response.json()['access_token']}"})
+    response = client.get("/product/" + product_response.json()["id"])
     assert response.status_code == 200
     assert response.json()["name"] == test_product["name"]
 
@@ -66,25 +66,25 @@ def test_read_non_existing_item(clear_db):
 # test for correclty creating a new product
 def test_create_product(clear_db):
     # first create a new user and verify it
-    register_response = client.post("/auth/signup",json=test_user)
-    user = User.find_one({"email":test_user["email"]})
+    register_response = client.post("/auth/signup", json=test_user)
+    user = User.find_one({"email": test_user["email"]})
     user = deserialize_user(user)
-    verification_code = pyotp.TOTP(user["otp_secret"],interval=600).now()
-    verify_response = client.post("/auth/verify",json={"id":register_response.json()["id"],"verification_code":verification_code})
+    verification_code = pyotp.TOTP(user["otp_secret"], interval=600).now()
+    verify_response = client.post("/auth/verify", json={"id": register_response.json()["id"], "verification_code": verification_code})
     # then create a new product by the new user
-    response = client.post("/product",json=test_product,headers={"Authorization":f"Bearer {verify_response.json()['access_token']}"})
+    response = client.post("/product", json=test_product, headers={"Authorization": f"Bearer {verify_response.json()['access_token']}"})
     assert response.status_code == 201
     assert response.json()["name"] == test_product["name"]
 
 def test_create_product_missing_field(clear_db):
     # first create a new user and verify it
-    register_response = client.post("/auth/signup",json=test_user)  
-    user = User.find_one({"email":test_user["email"]})
+    register_response = client.post("/auth/signup", json=test_user)  
+    user = User.find_one({"email": test_user["email"]})
     user = deserialize_user(user)
-    verification_code = pyotp.TOTP(user["otp_secret"],interval=600).now()
-    verify_response = client.post("/auth/verify",json={"id":register_response.json()["id"],"verification_code":verification_code})
+    verification_code = pyotp.TOTP(user["otp_secret"], interval=600).now()
+    verify_response = client.post("/auth/verify", json={"id": register_response.json()["id"], "verification_code": verification_code})
     # then create a new product by the new user
-    response = client.post("/product",json={"name":"test","description":"test","price":100,"currency":"USD","category":"test","location":"test"},headers={"Authorization":f"Bearer {verify_response.json()['access_token']}"})
+    response = client.post("/product", json={"name": "test", "description": "test", "price": 100, "currency": "USD", "category": "test", "location": "test"}, headers={"Authorization": f"Bearer {verify_response.json()['access_token']}"})
     assert response.status_code == 422
     assert response.json() == {
         'detail':[
@@ -107,13 +107,13 @@ def test_create_product_missing_field(clear_db):
         }
 def test_create_product_invalid_field(clear_db):
     # first create a new user and verify it
-    register_response = client.post("/auth/signup",json=test_user)
-    user = User.find_one({"email":test_user["email"]})
+    register_response = client.post("/auth/signup", json=test_user)
+    user = User.find_one({"email": test_user["email"]})
     user = deserialize_user(user)
-    verification_code = pyotp.TOTP(user["otp_secret"],interval=600).now()
-    verify_response = client.post("/auth/verify",json={"id":register_response.json()["id"],"verification_code":verification_code})
+    verification_code = pyotp.TOTP(user["otp_secret"], interval=600).now()
+    verify_response = client.post("/auth/verify", json={"id": register_response.json()["id"], "verification_code": verification_code})
     # then create a new product by the new user with invalid price field type
-    response=client.post("/product",json={"name":"test","description":"test","price":"test","currency":"USD","category":"test","location":"test"},headers={"Authorization":f"Bearer {verify_response.json()['access_token']}"})
+    response=client.post("/product", json={"name": "test", "description": "test", "price": "test", "currency": "USD", "category": "test", "location": "test"}, headers={"Authorization": f"Bearer {verify_response.json()['access_token']}"})
     assert response.status_code == 422
     assert response.json() == {
         'detail':[
