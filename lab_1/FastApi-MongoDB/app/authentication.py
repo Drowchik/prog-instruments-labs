@@ -214,12 +214,3 @@ async def refresh_token(response: Response,Authorize: dict=Depends(jwt_refresh_t
     
     return {"type": "Bearer", "access_token": access_token, "refresh_token": refresh_token}
     
-
-
-
-
-
-
-
-
-

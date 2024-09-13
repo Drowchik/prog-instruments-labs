@@ -94,6 +94,3 @@ async def jwt_required(request: Request, token: str = Depends(oauth_2_scheme)) -
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="token expired")
     except PyJWTError as e:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="invalid token")
-
- 
-       

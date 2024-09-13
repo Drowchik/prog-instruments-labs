@@ -151,9 +151,3 @@ async def update_product(id: str, data: CreateProduct, Authorize: dict = Depends
     
     # product_updated=Product.find_one({"_id":ObjectId(id)})
     return deserialize_product(product)
-
-
-
-
-
-

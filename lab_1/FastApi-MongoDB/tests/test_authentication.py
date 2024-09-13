@@ -159,3 +159,4 @@ def test_forgot_password_user_not_exist(clear_db):
     response = client.patch("/auth/forgot-password", json={"email": "example@gmail.com", "password": "12345678"})
     assert response.status_code == 404
     assert response.json() == {"detail": "user not found"}
+    

@@ -21,4 +21,3 @@ def clear_db():
 
     client.close()
     
-    

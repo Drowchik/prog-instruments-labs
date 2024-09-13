@@ -79,9 +79,3 @@ class ReadUserProfile(BaseModel):
 class UpdateUserProfile(BaseModel):
     name: str
     username: str
-
-
-
-
-
-   

@@ -144,3 +144,4 @@ def test_create_product_invalid_field(clear_db):
             }
         ]
     }
+    
