@@ -4,8 +4,6 @@ from datetime import datetime
 from pydantic import BaseModel, EmailStr, StringConstraints, Field
 
 
-
-
 # product shemas
 class ReadProduct(BaseModel):
     id: str
@@ -32,7 +30,6 @@ class CreateProduct(BaseModel):
     currency: str = Field(default="USD", max_length=3)
 
 
-
 # user authentication shemas
 class CreateUser(BaseModel):
     name: str
@@ -40,26 +37,30 @@ class CreateUser(BaseModel):
     email: EmailStr = Field(..., max_length=50)
     password: str = Field(..., min_length=8, max_length=64)
 
+
 class LoginUser(BaseModel):
     email: EmailStr
     password: str = Field(..., min_length=8, max_length=64)
+
 
 class ResponseUser(BaseModel):
     id:str
     email: EmailStr = Field(..., max_length=50)
 
+
 class Verification(BaseModel):
     id: str
     verification_code: str
 
+
 class ResendCode(BaseModel):
     email:EmailStr = Field(..., max_length=50)
+
 
 class ForgotPassword(BaseModel):
     email:EmailStr = Field(..., max_length=50)
     password:str = Field(..., min_length=8, max_length=64)
 
-# user profile schemas
 
 class UserProfile(BaseModel):
     name: str
@@ -67,7 +68,7 @@ class UserProfile(BaseModel):
     picture: Union[str, None]
     created_at: Union[datetime, None]
 
-# read user profile for authenticated user 
+
 class ReadUserProfile(BaseModel):
     id: str
     name: str
@@ -75,6 +76,7 @@ class ReadUserProfile(BaseModel):
     picture: Union[str, None]
     email: Union[EmailStr, None]
     created_at: Union[datetime, None]
+
 
 class UpdateUserProfile(BaseModel):
     name: str

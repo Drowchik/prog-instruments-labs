@@ -9,7 +9,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from app import product, profile, authentication
 
 
-
 dotenv.load_dotenv()
 app = FastAPI()
 
@@ -32,7 +31,6 @@ except FileExistsError:
 
 app.mount("/static", 
           StaticFiles(directory="static"), name="static")
-
 
 
 if __name__ == "__main__":

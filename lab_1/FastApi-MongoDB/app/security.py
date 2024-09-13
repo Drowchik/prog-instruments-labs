@@ -9,6 +9,7 @@ from fastapi.security import OAuth2PasswordBearer
 from jwt import encode,decode
 from passlib.context import CryptContext
 
+
 dotenv.load_dotenv(".env")
 
 password_context = CryptContext(schemes=["bcrypt"], 
@@ -34,13 +35,12 @@ conf = ConnectionConfig(
 )
 
 
-
-
 def get_password_hash(password):
     """
         Hashing password.
     """
     return password_context.hash(password)
+
 
 def verify_password(plain_password, hashed_password):
     """ 
@@ -66,6 +66,8 @@ async def send_email(email_conf: str, verifcation_code: str):
 in the .env file we have stored the secret key:
 SECRET_KEY = YOUR SECRET KEY
 """
+
+
 async def create_jwt_token(data: dict, 
                            expires_time: datetime, mode: str):
     """
@@ -77,6 +79,7 @@ async def create_jwt_token(data: dict,
                          key=os.getenv('SECRET_KEY'),
                          payload=data)
     return encoded_jwt
+
 
 async def jwt_refresh_token_required(request: Request, 
                                      token: str = Depends(oauth_2_scheme)) -> dict:

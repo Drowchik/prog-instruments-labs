@@ -35,7 +35,9 @@ from app.security import (
 User = client.MarketPlace.users
 
 # the valid username of the user (only alphabets and numbers  and (.)(-) between the chracters) 
-username_regex = re.compile(r"^(([a-zA-Z0-9]+)|([a-zA-Z0-9]+\.*[a-zA-Z0-9]+)|([a-zA-Z0-9]+-*[a-zA-Z0-9]+))$")
+username_regex = re.compile(
+    r"^(([a-zA-Z0-9]+)|([a-zA-Z0-9]+\.*[a-zA-Z0-9]+)|([a-zA-Z0-9]+-*[a-zA-Z0-9]+))$"
+)
 
 
 auth_router = APIRouter(prefix="/auth", tags=["Authentication"])
@@ -43,6 +45,7 @@ auth_router = APIRouter(prefix="/auth", tags=["Authentication"])
 # setting the default access and refresh token expires time 
 ACCESS_TOKEN_EXPIRES_IN: timedelta = timedelta(hours=1)
 REFRESH_TOKEN_EXPIRES_IN: timedelta = timedelta(days=30)
+
 
 def deserialize_data(user):
     return {"id": str(user["_id"]),
@@ -234,7 +237,7 @@ async def login(body: LoginUser, response: Response) -> dict:
 
     return {"id": user_data["id"], "type": "Bearer", "access_token": access_token, "refresh_token": refresh_token}
 
-# resent the verification code
+
 @auth_router.post("/send-code", status_code=status.HTTP_200_OK)
 async def resend_code(body: ResendCode, background_tasks: BackgroundTasks) -> dict:
     """
@@ -263,7 +266,7 @@ async def resend_code(body: ResendCode, background_tasks: BackgroundTasks) -> di
     background_tasks.add_task(send_email,body.email, verification_code)
     return {"message": "verification code sent to your email"}
 
-# resetting the password user 
+
 @auth_router.patch("/forgot-password", status_code=status.HTTP_200_OK)
 async def reset_password(response: Response, body: ForgotPassword) -> dict:
     """
@@ -327,7 +330,7 @@ async def reset_password(response: Response, body: ForgotPassword) -> dict:
             "access_token": access_token, 
             "refresh_token": refresh_token}
 
-# refreshing the access token via refresh token
+
 @auth_router.get("/refresh-token", status_code=status.HTTP_200_OK)
 async def refresh_token(response: Response,
                         Authorize: dict=Depends(jwt_refresh_token_required)):

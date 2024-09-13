@@ -57,10 +57,12 @@ def deserialize_product(product)-> dict:
         'views': product["views"]
         }
 
+
 def remove_images(images_urls: List[str]):
     for image in images_urls:
         path = re.findall(r'static/.+', image.url)
         os.remove(str(path[0]))
+
 
 def is_valid_objectid(object_id: str) -> bool:
     """
@@ -79,7 +81,6 @@ def is_valid_objectid(object_id: str) -> bool:
         return False
 
 
-#  this is a route for getting all products
 @product_router.get("/",status_code=status.HTTP_200_OK, 
                     response_model=List[ReadProduct])
 async def get_products():
@@ -93,7 +94,7 @@ async def get_products():
 
     return products
 
-# this is for getting a single product
+
 @product_router.get("/{id}", status_code=status.HTTP_200_OK, 
                     response_model=ReadProduct)
 async def get_product(id: str):
@@ -116,7 +117,6 @@ async def get_product(id: str):
     return deserialize_product(product)
 
 
-# this is for creating a new product
 @product_router.post("/", status_code=status.HTTP_201_CREATED, 
                      response_model=ReadProduct)
 async def create_product(product: CreateProduct, 
@@ -140,6 +140,7 @@ async def create_product(product: CreateProduct,
     new_product = Product.insert_one(product)
     new_product = Product.find_one({"_id": new_product.inserted_id})
     return deserialize_product(new_product)
+
 
 @product_router.post("/upload/{id}", 
                      status_code=status.HTTP_201_CREATED)
@@ -183,7 +184,7 @@ async def upload_images(request: Request, id: str,
     product.update_one({"$set": {"images_url": images_url}})
     return JSONResponse(content={"detail": "images uploaded"})
 
-# deleting a product from the database
+
 @product_router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_product(id: str, Authorize: dict = Depends(jwt_required)):
     """
@@ -214,7 +215,6 @@ async def delete_product(id: str, Authorize: dict = Depends(jwt_required)):
     return JSONResponse(content={"detail": "product deleted"})
 
 
-#  updating a single product 
 @product_router.patch("/{id}", status_code=status.HTTP_202_ACCEPTED)
 async def update_product(id: str, data: CreateProduct, 
                          Authorize: dict = Depends(jwt_required)):

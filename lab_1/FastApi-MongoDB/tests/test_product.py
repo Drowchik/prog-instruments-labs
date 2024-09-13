@@ -5,6 +5,7 @@ from main import app
 from .conftest import clear_db
 from app.authentication import User
 
+
 client = TestClient(app)
 
 # test user example
@@ -14,6 +15,7 @@ test_user = {
     "name": "username",
     "password": "12345678",
 }
+
 
 def deserialize_user(user) -> dict:
     """ 
@@ -41,7 +43,6 @@ test_product = {
 }
 
 
-# test for getting all products
 def test_read_items(clear_db):
     """ 
         Test for getting all products
@@ -49,6 +50,7 @@ def test_read_items(clear_db):
     response = client.get("/product")
     assert response.status_code == 200
     assert len(response.json()) == 0
+
 
 def test_read_single_item(clear_db):
     """ 
@@ -73,6 +75,7 @@ def test_read_single_item(clear_db):
     assert response.status_code == 200
     assert response.json()["name"] == test_product["name"]
 
+
 def test_read_non_existing_item(clear_db):
     """ 
         Test for a non-existent product
@@ -81,7 +84,7 @@ def test_read_non_existing_item(clear_db):
     assert response.status_code == 404
     assert response.json() == {"detail": "Product not found"}
 
-# test for correclty creating a new product
+
 def test_create_product(clear_db):
     """ 
         Test for correclty creating a new product
@@ -99,6 +102,7 @@ def test_create_product(clear_db):
                            headers={"Authorization": f"Bearer {verify_response.json()['access_token']}"})
     assert response.status_code == 201
     assert response.json()["name"] == test_product["name"]
+
 
 def test_create_product_missing_field(clear_db):
     """
@@ -141,6 +145,8 @@ def test_create_product_missing_field(clear_db):
                 }
             ]
         }
+    
+    
 def test_create_product_invalid_field(clear_db):
     """ 
         Test for an invalid field in the product

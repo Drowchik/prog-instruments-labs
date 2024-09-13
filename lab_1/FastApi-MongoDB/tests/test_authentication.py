@@ -5,7 +5,6 @@ from main import app
 from app.authentication import User
 
 
-
 client = TestClient(app)
 
 
@@ -15,6 +14,7 @@ test_user = {
     "name": "username",
     "password": "12345678",
 }
+
 
 def deserialize_user(user: dict) -> dict:
     """  
@@ -29,6 +29,7 @@ def deserialize_user(user: dict) -> dict:
             "otp_secret": user["otp_secret"],
             "email": user["email"]}
 
+
 def test_signup(clear_db):
     """
         Test that a new user can successfully sign up.
@@ -36,6 +37,7 @@ def test_signup(clear_db):
     response = client.post("/auth/signup", json=test_user)
     assert response.status_code == 201
     assert response.json()["email"] == test_user["email"]
+
 
 def test_singup_email_already_exist(clear_db):
     """
@@ -45,6 +47,7 @@ def test_singup_email_already_exist(clear_db):
     response = client.post("/auth/signup", json=test_user)
     assert response.status_code == 409
     assert response.json() == {"detail": "email already exist"}
+  
    
 def test_singup_username_already_exist(clear_db):
     """  
@@ -70,6 +73,7 @@ def test_singup_username_invalid(clear_db):
                                                 "password": "12345678"})
     assert response.status_code == 400
     assert response.json() == {"detail": "invalid username"}
+
 
 def test_signup_user_invalid_email(clear_db):
     """
@@ -101,6 +105,7 @@ def test_signup_user_invalid_email(clear_db):
         ],
     }
 
+
 def test_verify_email(clear_db):
     """ 
         Test that a user can successfully verify their email 
@@ -114,6 +119,7 @@ def test_verify_email(clear_db):
                                  "verification_code": verification_code})
     assert response.status_code == 200
     assert response.json()["id"] == register_response.json()["id"]
+
 
 def test_verify_email_invalid_code(clear_db):
     """ 
@@ -137,6 +143,7 @@ def test_login_not_exist(clear_db):
     assert response.status_code == 404
     assert response.json() == {"detail": "user not found"}
 
+
 def test_login_unverified_user(clear_db):
     """ 
         Test attempting to log in with an unverified user
@@ -147,6 +154,7 @@ def test_login_unverified_user(clear_db):
                                  "password":"12345678"})
     assert response.status_code == 401
     assert response.json() == {"detail": "user not verified"}
+
 
 def test_login_invalid_password(clear_db):
     """ 
@@ -168,7 +176,7 @@ def test_login_invalid_password(clear_db):
     assert response.status_code == 400
     assert response.json() == {"detail": "invalid password"}
 
-# test login with valid credentials
+
 def test_login(clear_db):
     """ 
         Test login with valid credentials
@@ -186,6 +194,7 @@ def test_login(clear_db):
     assert response.status_code == 200
     assert response.json()["id"] == register_response.json()["id"]
 
+
 def test_resond_code_user_not_exist(clear_db):
     """ 
         Test for invalid email to send new verification code
@@ -194,6 +203,7 @@ def test_resond_code_user_not_exist(clear_db):
                            json={"email": "example@gmail.com"})
     assert response.status_code == 404
     assert response.json() == {"detail": "user not found"}
+
 
 def test_refresh_token(clear_db):
     """ 
@@ -217,6 +227,7 @@ def test_refresh_token(clear_db):
                           headers={"Authorization": f"Bearer {refresh_token}"})
     assert response.status_code == 200
 
+
 def test_invalid_refresh_token(clear_db):
     """ 
         Test invalid refresh token
@@ -227,6 +238,7 @@ def test_invalid_refresh_token(clear_db):
     assert response.status_code == 401
     assert response.json() == {"detail": "invalid token"}
 
+
 def test_resond_code_user_not_exist(clear_db):
     """ 
         Verification for a non-existent user
@@ -235,6 +247,7 @@ def test_resond_code_user_not_exist(clear_db):
                            json={"email": "example@gmail.com"})
     assert response.status_code == 404
     assert response.json() == {"detail": "user not found"}
+
 
 def test_forgot_password_user_not_exist(clear_db):
     """ 

@@ -61,6 +61,7 @@ async def get_profile(user_name: str):
                             detail="user not found")
     return deserialize_data(profile)
 
+
 @profile_router.get("/", status_code=status.HTTP_200_OK, 
                     response_model=ReadUserProfile)
 async def get_profile_me(Authorize: dict = Depends(jwt_required)):
@@ -77,6 +78,7 @@ async def get_profile_me(Authorize: dict = Depends(jwt_required)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, 
                             detail="user not found")
     return deserialize_data(profile)
+
 
 @profile_router.get('/logout', status_code=status.HTTP_200_OK)
 async def logout(response: Response, 
