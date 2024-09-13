@@ -33,6 +33,15 @@ product_router = APIRouter(prefix="/product", tags=["Products"])
 
 
 def deserialize_product(product)-> dict:
+    """
+        Сonverts it to a dictionary
+
+    Args:
+        product: Product from the database
+
+    Returns:
+        dict: result dict
+    """
     return {
         'id': str(product["_id"]),
         'name': product["name"],
@@ -54,6 +63,14 @@ def remove_images(images_urls: List[str]):
         os.remove(str(path[0]))
 
 def is_valid_objectid(object_id: str) -> bool:
+    """
+        Check if object_id can be converted to an ObjectId
+    Args:
+        object_id (str): The line to check
+
+    Returns:
+        bool: True or False
+    """
     try:
         # Check if object_id can be converted to an ObjectId
         ObjectId(object_id)
@@ -66,7 +83,12 @@ def is_valid_objectid(object_id: str) -> bool:
 @product_router.get("/",status_code=status.HTTP_200_OK, 
                     response_model=List[ReadProduct])
 async def get_products():
+    """ 
+        list of all products
 
+    Returns:
+        List[ReadProduct]: List of all products
+    """
     products = [deserialize_product(product) for product in Product.find()]   
 
     return products
@@ -75,6 +97,14 @@ async def get_products():
 @product_router.get("/{id}", status_code=status.HTTP_200_OK, 
                     response_model=ReadProduct)
 async def get_product(id: str):
+    """Get one product
+
+    Args:
+        id (str): id_product
+
+    Returns:
+        ReadProduct: The product corresponding to the ID.
+    """
     if not is_valid_objectid(id):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, 
                             detail="Product not found")
@@ -91,6 +121,16 @@ async def get_product(id: str):
                      response_model=ReadProduct)
 async def create_product(product: CreateProduct, 
                          Authorize: dict = Depends(jwt_required)):
+    """
+         Create a new product.
+
+    Args:
+        product (CreateProduct): Pydantic BaseModel
+        Authorize (dict, optional): user data. Defaults to Depends(jwt_required).
+
+    Returns:
+        ReadProduct: created product
+    """
     product=dict(product)
     product["created_at"] = datetime.today()
     product["is_available"] = True
@@ -106,6 +146,18 @@ async def create_product(product: CreateProduct,
 async def upload_images(request: Request, id: str, 
                         images: List[UploadFile] = File(...),
                         Authorize: dict = Depends(jwt_required)):
+    """
+        Uploads images for the product
+
+    Args:
+        request (Request): HTTP
+        id (str): Id product
+        images (List[UploadFile], optional): list image. Defaults to File(...).
+        Authorize (dict, optional): user data. Defaults to Depends(jwt_required).
+
+    Returns:
+        _type_: Confirmation of uploading images.
+    """
     if not is_valid_objectid(id):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, 
                             detail="Product not found")
@@ -134,6 +186,16 @@ async def upload_images(request: Request, id: str,
 # deleting a product from the database
 @product_router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_product(id: str, Authorize: dict = Depends(jwt_required)):
+    """
+        Deleting a product from the database
+
+    Args:
+        id (str): id product
+        Authorize (dict, optional): user data. Defaults to Depends(jwt_required).
+
+    Returns:
+        _type_: message product deleted
+    """
     if not is_valid_objectid(id):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, 
                             detail="Product not found")
@@ -156,6 +218,17 @@ async def delete_product(id: str, Authorize: dict = Depends(jwt_required)):
 @product_router.patch("/{id}", status_code=status.HTTP_202_ACCEPTED)
 async def update_product(id: str, data: CreateProduct, 
                          Authorize: dict = Depends(jwt_required)):
+    """
+        updating a single product 
+
+    Args:
+        id (str): id product
+        data (CreateProduct): information
+        Authorize (dict, optional): user data. Defaults to Depends(jwt_required).
+
+    Returns:
+        _type_: New product
+    """
     if not is_valid_objectid(id):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, 
                             detail="Product not found")

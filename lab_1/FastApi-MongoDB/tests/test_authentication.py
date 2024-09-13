@@ -16,7 +16,10 @@ test_user = {
     "password": "12345678",
 }
 
-def deserialize_user(user):
+def deserialize_user(user: dict) -> dict:
+    """  
+        Сonverts it to a dictionary
+    """
     return {"id": str(user["_id"]),
             "name": user["name"],
             "password": user["password"],
@@ -27,17 +30,26 @@ def deserialize_user(user):
             "email": user["email"]}
 
 def test_signup(clear_db):
+    """
+        Test that a new user can successfully sign up.
+    """
     response = client.post("/auth/signup", json=test_user)
     assert response.status_code == 201
     assert response.json()["email"] == test_user["email"]
 
 def test_singup_email_already_exist(clear_db):
+    """
+        When registering using an already registered email, the 409 status code is returned.
+    """
     client.post("/auth/signup", json=test_user)
     response = client.post("/auth/signup", json=test_user)
     assert response.status_code == 409
     assert response.json() == {"detail": "email already exist"}
    
 def test_singup_username_already_exist(clear_db):
+    """  
+        When registering using an already registered username, the 409 status code is returned.
+    """
     client.post("/auth/signup", json=test_user)
     response = client.post("/auth/signup", 
                            json={"email": "example2@gmail.com", 
@@ -47,8 +59,11 @@ def test_singup_username_already_exist(clear_db):
     assert response.status_code == 409
     assert response.json() == {"detail": "username already taken"}
 
-# test for invalid username format (only alphabets and numbers  and (.)(-) between the chracters)
+
 def test_singup_username_invalid(clear_db):
+    """ 
+        Test for invalid username format (only alphabets and numbers  and (.)(-) between the characters)
+    """
     response = client.post("/auth/signup", json={"email": "example@gmail.com", 
                                                 "username": "test.", 
                                                 "name": "username", 
@@ -56,8 +71,10 @@ def test_singup_username_invalid(clear_db):
     assert response.status_code == 400
     assert response.json() == {"detail": "invalid username"}
 
-# test for invalid email
 def test_signup_user_invalid_email(clear_db):
+    """
+        Test for invalid email
+    """
     response = client.post("/auth/signup", json={"email": "test", 
                                                  "username": "test", 
                                                  "name": "test", 
@@ -85,6 +102,9 @@ def test_signup_user_invalid_email(clear_db):
     }
 
 def test_verify_email(clear_db):
+    """ 
+        Test that a user can successfully verify their email 
+    """
     register_response = client.post("/auth/signup", json=test_user)
     user = User.find_one({"email": test_user["email"]})
     user = deserialize_user(user)
@@ -96,6 +116,9 @@ def test_verify_email(clear_db):
     assert response.json()["id"] == register_response.json()["id"]
 
 def test_verify_email_invalid_code(clear_db):
+    """ 
+        Test that verifying with an incorrect verification code returns a 400 status code.
+    """
     register_response =client.post("/auth/signup", json=test_user)
     response = client.post("/auth/verify", 
                            json={"id":register_response.json()["id"], 
@@ -105,6 +128,9 @@ def test_verify_email_invalid_code(clear_db):
 
 
 def test_login_not_exist(clear_db):
+    """ 
+        Test attempting to log in with a non-existent emai
+    """
     response = client.post("/auth/login", 
                            json={"email": "example@gmail.com", 
                                  "password": "12345678"})
@@ -112,6 +138,9 @@ def test_login_not_exist(clear_db):
     assert response.json() == {"detail": "user not found"}
 
 def test_login_unverified_user(clear_db):
+    """ 
+        Test attempting to log in with an unverified user
+    """
     client.post("/auth/signup", json=test_user)
     response = client.post("/auth/login", 
                            json={"email":"example@gmail.com", 
@@ -120,6 +149,9 @@ def test_login_unverified_user(clear_db):
     assert response.json() == {"detail": "user not verified"}
 
 def test_login_invalid_password(clear_db):
+    """ 
+        Test that logging in with an incorrect password returns a 400 status code.
+    """
     # register a new user
     register_response = client.post("/auth/signup", json=test_user)
     user = User.find_one({"email": test_user["email"]})
@@ -138,6 +170,9 @@ def test_login_invalid_password(clear_db):
 
 # test login with valid credentials
 def test_login(clear_db):
+    """ 
+        Test login with valid credentials
+    """
     register_response = client.post("/auth/signup", json=test_user)
     user = User.find_one({"email": test_user["email"]})
     user = deserialize_user(user)
@@ -151,14 +186,19 @@ def test_login(clear_db):
     assert response.status_code == 200
     assert response.json()["id"] == register_response.json()["id"]
 
-# test for invalid email to send new verification code
 def test_resond_code_user_not_exist(clear_db):
+    """ 
+        Test for invalid email to send new verification code
+    """
     response = client.post("/auth/send-code", 
                            json={"email": "example@gmail.com"})
     assert response.status_code == 404
     assert response.json() == {"detail": "user not found"}
 
 def test_refresh_token(clear_db):
+    """ 
+        Test that a user can successfully refresh their token.
+    """
     register_response = client.post("/auth/signup", 
                                     json=test_user)
     user = User.find_one({"email": test_user["email"]})
@@ -178,6 +218,9 @@ def test_refresh_token(clear_db):
     assert response.status_code == 200
 
 def test_invalid_refresh_token(clear_db):
+    """ 
+        Test invalid refresh token
+    """
     invalid_refresh_token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ"
     response = client.get("/auth/refresh-token", 
                           headers={"Authorization": f"Bearer {invalid_refresh_token}"})
@@ -185,12 +228,18 @@ def test_invalid_refresh_token(clear_db):
     assert response.json() == {"detail": "invalid token"}
 
 def test_resond_code_user_not_exist(clear_db):
+    """ 
+        Verification for a non-existent user
+    """
     response = client.post("/auth/send-code", 
                            json={"email": "example@gmail.com"})
     assert response.status_code == 404
     assert response.json() == {"detail": "user not found"}
 
 def test_forgot_password_user_not_exist(clear_db):
+    """ 
+        Password Reset test for a non-existent user
+    """
     response = client.patch("/auth/forgot-password", 
                             json={"email": "example@gmail.com", 
                                   "password": "12345678"})

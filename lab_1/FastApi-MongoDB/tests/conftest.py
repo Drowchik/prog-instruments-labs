@@ -9,6 +9,9 @@ dotenv.load_dotenv(".env")
 
 @pytest.fixture(scope="function")
 def clear_db():
+    """
+        A fixture for working with the database.
+    """
     client = MongoClient(os.getenv("DB_URL"))
     db = client.MarketPlace
     # Cleanup after running a test

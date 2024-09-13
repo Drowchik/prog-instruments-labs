@@ -58,7 +58,17 @@ def deserialize_data(user):
 @auth_router.post("/signup", 
                   status_code=status.HTTP_201_CREATED, 
                   response_model=ResponseUser)
-async def signup(body: CreateUser, background_tasks: BackgroundTasks):
+async def signup(body: CreateUser, background_tasks: BackgroundTasks) -> dict:
+    """ 
+        Registers a new user by creating an entry in the database.
+        
+        Args:
+            body (CreateUser): pydantic BaseModel, user information
+            background_tasks (BackgroundTasks): task queue for background processes.
+
+        Returns:
+            _type_: created user's ID and email.
+    """
     # checking if the user email exists
     if User.find_one({"email": body.email}):
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, 
@@ -89,7 +99,17 @@ async def signup(body: CreateUser, background_tasks: BackgroundTasks):
 
 
 @auth_router.post("/verify", status_code=status.HTTP_200_OK)
-async def verify(body: Verification, response: Response):
+async def verify(body: Verification, response: Response) -> dict:
+    """
+        Verifies the user
+
+        Args:
+            body (Verification): pydantic BaseModel
+            response (Response): HTTP response object to set cookies
+
+        Returns:
+            dict: The verified user's ID
+    """
     user = User.find_one({"_id": ObjectId(body.id)})
     # checking if the user exists
     if not user:
@@ -152,7 +172,17 @@ async def verify(body: Verification, response: Response):
 
 
 @auth_router.post("/login", status_code=status.HTTP_200_OK)
-async def login(body: LoginUser, response: Response):
+async def login(body: LoginUser, response: Response) -> dict:
+    """
+        Authenticates a user by validating the email and password.
+
+        Args:
+            body (LoginUser): pydantic BaseModel
+            response (Response): The HTTP response object to set cookies.
+
+        Returns:
+            dict: The logged-in user
+    """
     user=User.find_one({"email": body.email})
     # checking if the user exists
     if not user:
@@ -206,7 +236,17 @@ async def login(body: LoginUser, response: Response):
 
 # resent the verification code
 @auth_router.post("/send-code", status_code=status.HTTP_200_OK)
-async def resend_code(body: ResendCode, background_tasks: BackgroundTasks):
+async def resend_code(body: ResendCode, background_tasks: BackgroundTasks) -> dict:
+    """
+        Resends the verification code to the user's email.
+
+        Args:
+            body (ResendCode): Pydantic BaseModel
+            background_tasks (BackgroundTasks): Task queue for background processes.
+
+        Returns:
+            dict: message
+    """
     user = User.find_one({"email": body.email})
     # checking if the user exists
     if not user:
@@ -225,7 +265,18 @@ async def resend_code(body: ResendCode, background_tasks: BackgroundTasks):
 
 # resetting the password user 
 @auth_router.patch("/forgot-password", status_code=status.HTTP_200_OK)
-async def reset_password(response: Response, body: ForgotPassword):
+async def reset_password(response: Response, body: ForgotPassword) -> dict:
+    """
+        Resets the user's password.
+
+        Args:
+            response (Response): HTTP response object
+            body (ForgotPassword): Pydantic BaseModel
+
+
+        Returns:
+            dict: user's ID and new access/refresh tokens
+    """
     user = User.find_one({"email": body.email})
     # checking if the user exists
     if not user:
@@ -280,7 +331,17 @@ async def reset_password(response: Response, body: ForgotPassword):
 @auth_router.get("/refresh-token", status_code=status.HTTP_200_OK)
 async def refresh_token(response: Response,
                         Authorize: dict=Depends(jwt_refresh_token_required)):
+    """
+        Refresh token
 
+        Args:
+            response (Response): HTTP response object
+            Authorize (dict, optional): Defaults to Depends(jwt_refresh_token_required).
+
+        Returns:
+            _type_: The users new access/refresh tokens.
+
+    """
     user = User.find_one({"_id": ObjectId(Authorize["id"])})
 
     # checking if the user exists

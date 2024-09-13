@@ -25,7 +25,16 @@ profile_router = APIRouter(prefix="/profile",tags=["Profile"])
 User = client.MarketPlace.users
 
 
-def deserialize_data(user):
+def deserialize_data(user: dict) -> dict:
+    """ 
+        Сonverts it to a dictionary
+
+    Args:
+        user: User from the database
+
+    Returns:
+        dict: A dictionary containing user profile information.
+    """
     return {"id": str(user["_id"]),
             "name": user["name"],
             "username": user["username"],
@@ -33,31 +42,55 @@ def deserialize_data(user):
             "created_at": user["created_at"],
             "picture": user["picture"]}
 
-# retrieve user profile data publicly accessible for everyone
 @profile_router.get("/{user_name}", 
                     status_code=status.HTTP_200_OK, 
                     response_model=UserProfile)
 async def get_profile(user_name: str):
+    """ 
+        retrieve user profile data publicly accessible for everyone
+
+    Args:
+        user_name (str): username
+
+    Returns:
+        UserProfile: iformation
+    """
     profile = User.find_one({"username": user_name})
     if profile == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, 
                             detail="user not found")
     return deserialize_data(profile)
 
-# retrieve user profile data only for authenticated users
 @profile_router.get("/", status_code=status.HTTP_200_OK, 
                     response_model=ReadUserProfile)
 async def get_profile_me(Authorize: dict = Depends(jwt_required)):
+    """ 
+        Retrieve user profile data only for authenticated users
+
+    Args:
+        Authorize (dict, optional): user data. Defaults to Depends(jwt_required).
+    Returns:
+        ReadUserProfile: iformation
+    """
     profile = User.find_one({"_id":ObjectId(Authorize["id"])})
     if profile == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, 
                             detail="user not found")
     return deserialize_data(profile)
 
-#logout the user
 @profile_router.get('/logout', status_code=status.HTTP_200_OK)
 async def logout(response: Response, 
                  Authorize: dict = Depends(jwt_required)):
+    """
+        logout the user
+
+    Args:
+        response (Response): to work with cookies
+        Authorize (dict, optional): uset data. Defaults to Depends(jwt_required).
+
+    Returns:
+        dict: message
+    """
     response.delete_cookie(key='access_token', 
                            domain=None, 
                            httponly=True, 
@@ -69,10 +102,20 @@ async def logout(response: Response,
     response.set_cookie('logged_in', '', -1)
     return {'detail': 'success'}
 
-#upload profile picture of the user
+
 @profile_router.post('/upload', status_code=status.HTTP_200_OK)
 async def upload_picture(request: Request, picture: UploadFile = File(...),
                          Authorize: dict = Depends(jwt_required)):
+    """_summary_
+
+    Args:
+        request (Request): to work with cookies
+        picture (UploadFile, optional): upload profile picture of the user. Defaults to File(...).
+        Authorize (dict, optional): user data. Defaults to Depends(jwt_required).
+
+    Returns:
+        json: message
+    """
     user = User.find_one({"_id": ObjectId(Authorize["id"])})
     if user == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
@@ -90,10 +133,19 @@ async def upload_picture(request: Request, picture: UploadFile = File(...),
     
     return JSONResponse(content={"detail": "image uploaded"})
 
-# update user profile
+
 @profile_router.patch('/update', status_code=status.HTTP_200_OK)
 async def update_profile(data: UpdateUserProfile, 
                          Authorize: dict = Depends(jwt_required)):
+    """
+        update user profile
+    Args:
+        data (UpdateUserProfile): Pydantic BaseModel
+        Authorize (dict, optional): user data. Defaults to Depends(jwt_required).
+
+    Returns:
+        dict: update information
+    """
     user= User.find_one({"_id": ObjectId(Authorize["id"])})
     if user == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, 

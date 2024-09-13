@@ -35,17 +35,24 @@ conf = ConnectionConfig(
 
 
 
-# hashing password
+
 def get_password_hash(password):
+    """
+        Hashing password.
+    """
     return password_context.hash(password)
 
-# verifying if the password is correct
 def verify_password(plain_password, hashed_password):
+    """ 
+        Verifying if the password is correct.
+    """
     return password_context.verify(plain_password, hashed_password)
 
 
-# asychronously function for sending email
 async def send_email(email_conf: str, verifcation_code: str):
+    """ 
+        Asychronously function for sending email.
+    """
     fm = FastMail(config=conf)
     message = MessageSchema(
         subject="your verification code",
@@ -54,13 +61,16 @@ async def send_email(email_conf: str, verifcation_code: str):
         subtype=MessageType.plain)
     await fm.send_message(message)
 
-# creating jwt token 
+
 """
 in the .env file we have stored the secret key:
 SECRET_KEY = YOUR SECRET KEY
 """
 async def create_jwt_token(data: dict, 
                            expires_time: datetime, mode: str):
+    """
+        Creating jwt token.
+    """
     data["exp"] = datetime.utcnow() + expires_time
     data["mode"] = mode
     encoded_jwt = encode(algorithm="HS256",
@@ -70,8 +80,9 @@ async def create_jwt_token(data: dict,
 
 async def jwt_refresh_token_required(request: Request, 
                                      token: str = Depends(oauth_2_scheme)) -> dict:
-
-     # verifying if the refresh token is valid
+    """
+        Verifying if the refresh token is valid.
+    """
     try:
         payload = decode(token,os.getenv('SECRET_KEY'), algorithms=["HS256"])
         if "id" not in payload:
@@ -90,8 +101,10 @@ async def jwt_refresh_token_required(request: Request,
 
 
 async def jwt_required(request: Request, token: str = Depends(oauth_2_scheme)) -> dict:
-   
-    # verifying if the access token is valid
+    """
+        Verifying if the access token is valid
+
+    """
     try:
         payload = decode(token,os.getenv('SECRET_KEY'), algorithms=["HS256"])
         if "id" not in payload:

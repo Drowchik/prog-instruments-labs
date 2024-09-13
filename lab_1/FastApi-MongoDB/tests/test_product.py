@@ -15,8 +15,10 @@ test_user = {
     "password": "12345678",
 }
 
-# function to deserialize the user data from the database
 def deserialize_user(user) -> dict:
+    """ 
+        Function to deserialize the user data from the database
+    """
     return {"id": str(user["_id"]),
             "name": user["name"],
             "password": user["password"],
@@ -41,11 +43,20 @@ test_product = {
 
 # test for getting all products
 def test_read_items(clear_db):
+    """ 
+        Test for getting all products
+    """
     response = client.get("/product")
     assert response.status_code == 200
     assert len(response.json()) == 0
 
 def test_read_single_item(clear_db):
+    """ 
+        First create a new user and verify it.
+
+        Then create a new product by the new user.
+        And read single item
+    """
     # first create a new user and verify it
     register_response = client.post("/auth/signup", json=test_user)
     user = User.find_one({"email": test_user["email"]})
@@ -63,12 +74,18 @@ def test_read_single_item(clear_db):
     assert response.json()["name"] == test_product["name"]
 
 def test_read_non_existing_item(clear_db):
+    """ 
+        Test for a non-existent product
+    """
     response = client.get("/product/78")
     assert response.status_code == 404
     assert response.json() == {"detail": "Product not found"}
 
 # test for correclty creating a new product
 def test_create_product(clear_db):
+    """ 
+        Test for correclty creating a new product
+    """
     # first create a new user and verify it
     register_response = client.post("/auth/signup", json=test_user)
     user = User.find_one({"email": test_user["email"]})
@@ -84,6 +101,9 @@ def test_create_product(clear_db):
     assert response.json()["name"] == test_product["name"]
 
 def test_create_product_missing_field(clear_db):
+    """
+        An important field is missing in the product card
+    """
     # first create a new user and verify it
     register_response = client.post("/auth/signup", json=test_user)  
     user = User.find_one({"email": test_user["email"]})
@@ -122,6 +142,9 @@ def test_create_product_missing_field(clear_db):
             ]
         }
 def test_create_product_invalid_field(clear_db):
+    """ 
+        Test for an invalid field in the product
+    """
     # first create a new user and verify it
     register_response = client.post("/auth/signup", json=test_user)
     user = User.find_one({"email": test_user["email"]})
