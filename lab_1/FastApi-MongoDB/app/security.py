@@ -11,7 +11,8 @@ from passlib.context import CryptContext
 
 dotenv.load_dotenv(".env")
 
-password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+password_context = CryptContext(schemes=["bcrypt"], 
+                                deprecated="auto")
 oauth_2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
 
 
@@ -58,26 +59,34 @@ async def send_email(email_conf: str, verifcation_code: str):
 in the .env file we have stored the secret key:
 SECRET_KEY = YOUR SECRET KEY
 """
-async def create_jwt_token(data: dict, expires_time: datetime, mode: str):
+async def create_jwt_token(data: dict, 
+                           expires_time: datetime, mode: str):
     data["exp"] = datetime.utcnow() + expires_time
     data["mode"] = mode
-    encoded_jwt = encode(algorithm="HS256",key=os.getenv('SECRET_KEY'),payload=data)
+    encoded_jwt = encode(algorithm="HS256",
+                         key=os.getenv('SECRET_KEY'),
+                         payload=data)
     return encoded_jwt
 
-async def jwt_refresh_token_required(request: Request, token: str = Depends(oauth_2_scheme)) -> dict:
+async def jwt_refresh_token_required(request: Request, 
+                                     token: str = Depends(oauth_2_scheme)) -> dict:
 
      # verifying if the refresh token is valid
     try:
         payload = decode(token,os.getenv('SECRET_KEY'), algorithms=["HS256"])
         if "id" not in payload:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="invalid token")
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                                detail="invalid token")
         if payload["mode"] != "refresh_token":
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="invalid token")
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                                detail="invalid token")
         return payload
     except ExpiredSignatureError:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="token expired")
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                                detail="token expired")
     except PyJWTError as e:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="invalid token")
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                                detail="invalid token")
 
 
 async def jwt_required(request: Request, token: str = Depends(oauth_2_scheme)) -> dict:
@@ -86,11 +95,15 @@ async def jwt_required(request: Request, token: str = Depends(oauth_2_scheme)) -
     try:
         payload = decode(token,os.getenv('SECRET_KEY'), algorithms=["HS256"])
         if "id" not in payload:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="invalid token")
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                                detail="invalid token")
         if payload["mode"] != "access_token":
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="invalid token")
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                                detail="invalid token")
         return payload
     except ExpiredSignatureError:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="token expired")
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                                detail="token expired")
     except PyJWTError as e:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="invalid token")
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                                detail="invalid token")
