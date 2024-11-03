@@ -2,6 +2,9 @@ import json
 import hashlib
 from typing import List
 
+from config import VARIANT, PATH_CSV, PATH_PATTERNS, PATH_RESULT
+from utils import read_json, read_csv, get_data, write_json
+
 """
 В этом модуле обитают функции, необходимые для автоматизированной проверки результатов ваших трудов.
 """
@@ -26,7 +29,7 @@ def calculate_checksum(row_numbers: List[int]) -> str:
     return hashlib.md5(json.dumps(row_numbers).encode('utf-8')).hexdigest()
 
 
-def serialize_result(variant: int, checksum: str) -> None:
+def serialize_result(path: str, variant: int, checksum: str) -> None:
     """
     Метод для сериализации результатов лабораторной пишите сами.
     Вам нужно заполнить данными - номером варианта и контрольной суммой - файл, лежащий в папке с лабораторной.
@@ -38,9 +41,16 @@ def serialize_result(variant: int, checksum: str) -> None:
     :param variant: номер вашего варианта
     :param checksum: контрольная сумма, вычисленная через calculate_checksum()
     """
-    pass
+    data = {
+        "variant": variant,
+        "checksum": checksum
+    }
+    write_json(path, data)
 
 
 if __name__ == "__main__":
-    print(calculate_checksum([1, 2, 3]))
-    print(calculate_checksum([3, 2, 1]))
+    patterns = read_json(PATH_PATTERNS)
+    data = read_csv(PATH_CSV)
+    result = get_data(patterns, data)
+    serialize_result(path=PATH_RESULT, variant=VARIANT,
+                     checksum=calculate_checksum(result))
