@@ -45,7 +45,7 @@ def write_json(path: str, data: dict) -> None:
         data (dict): information to write to the file
     """
     try:
-        with open(path, mode="w", encoding="utf-16") as f:
+        with open(path, mode="w", encoding="utf-8") as f:
             json.dump(data, f)
     except Exception as e:
         print(f"Exception write_json: {e}")

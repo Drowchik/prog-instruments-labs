@@ -1,5 +1,5 @@
-import json
 import hashlib
+import json
 from typing import List
 
 from config import VARIANT, PATH_CSV, PATH_PATTERNS, PATH_RESULT
