@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "my google disk"
+version = "0.1.0"
+description = "project for university"
+authors = ["dsergeev <dsergeev@rvision.ru>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.115.3"
+uvicorn = "^0.32.0"
+dynaconf = "^3.2.6"
+sqlalchemy = "^2.0.36"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

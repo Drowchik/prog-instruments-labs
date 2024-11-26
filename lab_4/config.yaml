@@ -1,0 +1,10 @@
+database:
+  user: postgres
+  password: postgres
+  host: localhost
+  port: 5432
+  db: google_disk
+
+jwt:
+  algorithm: HS256 
+  secret_key: 8zS7ksglywomSBHtEs2G94tiNf6UkhPIEqvjC71tlUA=
