@@ -55,7 +55,7 @@ class UserService:
     async def login_user(self, user_data: SUserRegister) -> str:
         existing_user = await self.get_user_by_filter(email=user_data.email)
         auth_service = AuthService()
-        if not existing_user and not auth_service.verify_password(user_data.password, existing_user.hashed_password):
+        if not existing_user or not auth_service.verify_password(user_data.password, existing_user.hashed_password):
             logger.error(
                 f"Login failed: Email {user_data.email} not registered or wrong password")
             raise HTTPException(status_code=400, detail="Email not registered")
