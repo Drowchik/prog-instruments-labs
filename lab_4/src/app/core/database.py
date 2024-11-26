@@ -1,5 +1,6 @@
 from src.app.core.config import settings
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from src.app.core.logging_config import logger
 
 
 def make_pg_options(
@@ -28,5 +29,6 @@ async_session_maker = async_sessionmaker(
 
 
 async def get_db() -> AsyncSession:
+    logger.debug("Opening a new database session")
     async with async_session_maker() as session:
         yield session
