@@ -1,0 +1,1 @@
+PATH = "src\proportion.json"

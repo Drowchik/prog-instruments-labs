@@ -1,0 +1,7 @@
+{
+    "Grass": 0.1,
+    "Rock": 0.1,
+    "Tree": 0.1,
+    "Herbivore": 0.2,
+    "Predator": 0.15
+}
