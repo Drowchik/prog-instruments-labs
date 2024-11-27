@@ -16,7 +16,6 @@ class Point:
         return f"Point(X:{self.x}, Y:{self.y})"
 
     def get_neighboors(self) -> list:
-        # возможна проверка не вышел ли я за границу
         return [Point(self.x, self.y+1), Point(self.x, self.y-1),
                 Point(self.x+1, self.y), Point(self.x-1, self.y)]
 

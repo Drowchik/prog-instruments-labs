@@ -1,1 +1,1 @@
-PATH = "src\proportion.json"
+PATH = "lab_5\src\proportion.json"

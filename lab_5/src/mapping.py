@@ -1,8 +1,8 @@
 from collections import deque
 from typing import Dict, List, Tuple
 
-from enity import Enity, Grass
-from point import Point
+from src.enity import Enity, Grass
+from src.point import Point
 
 
 class Map:

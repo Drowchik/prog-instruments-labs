@@ -1,6 +1,6 @@
 from abc import ABC
 
-from point import Point
+from src.point import Point
 
 
 class Enity(ABC):
